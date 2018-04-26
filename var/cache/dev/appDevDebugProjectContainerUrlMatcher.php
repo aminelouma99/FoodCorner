@@ -119,6 +119,68 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             return array (  '_controller' => 'RestoBundle\\Controller\\PlatController::ajoutAction',  '_route' => 'ajout_plat',);
         }
 
+        if (0 === strpos($pathinfo, '/reservation')) {
+            // reservation_index
+            if (rtrim($pathinfo, '/') === '/reservation') {
+                if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
+                    $allow = array_merge($allow, array('GET', 'HEAD'));
+                    goto not_reservation_index;
+                }
+
+                if (substr($pathinfo, -1) !== '/') {
+                    return $this->redirect($pathinfo.'/', 'reservation_index');
+                }
+
+                return array (  '_controller' => 'RestoBundle\\Controller\\ReservationController::indexAction',  '_route' => 'reservation_index',);
+            }
+            not_reservation_index:
+
+            // reservation_show
+            if (preg_match('#^/reservation/(?P<id>[^/]++)/show$#s', $pathinfo, $matches)) {
+                if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
+                    $allow = array_merge($allow, array('GET', 'HEAD'));
+                    goto not_reservation_show;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'reservation_show')), array (  '_controller' => 'RestoBundle\\Controller\\ReservationController::showAction',));
+            }
+            not_reservation_show:
+
+            // reservation_new
+            if ($pathinfo === '/reservation/new') {
+                if (!in_array($this->context->getMethod(), array('GET', 'POST', 'HEAD'))) {
+                    $allow = array_merge($allow, array('GET', 'POST', 'HEAD'));
+                    goto not_reservation_new;
+                }
+
+                return array (  '_controller' => 'RestoBundle\\Controller\\ReservationController::newAction',  '_route' => 'reservation_new',);
+            }
+            not_reservation_new:
+
+            // reservation_edit
+            if (preg_match('#^/reservation/(?P<id>[^/]++)/edit$#s', $pathinfo, $matches)) {
+                if (!in_array($this->context->getMethod(), array('GET', 'POST', 'HEAD'))) {
+                    $allow = array_merge($allow, array('GET', 'POST', 'HEAD'));
+                    goto not_reservation_edit;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'reservation_edit')), array (  '_controller' => 'RestoBundle\\Controller\\ReservationController::editAction',));
+            }
+            not_reservation_edit:
+
+            // reservation_delete
+            if (preg_match('#^/reservation/(?P<id>[^/]++)/delete$#s', $pathinfo, $matches)) {
+                if ($this->context->getMethod() != 'DELETE') {
+                    $allow[] = 'DELETE';
+                    goto not_reservation_delete;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'reservation_delete')), array (  '_controller' => 'RestoBundle\\Controller\\ReservationController::deleteAction',));
+            }
+            not_reservation_delete:
+
+        }
+
         // homepage
         if (rtrim($pathinfo, '/') === '') {
             if (substr($pathinfo, -1) !== '/') {

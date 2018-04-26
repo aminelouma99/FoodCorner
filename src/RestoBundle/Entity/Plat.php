@@ -3,6 +3,7 @@
 namespace RestoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Plat
@@ -48,6 +49,33 @@ class Plat
      *
      * @return int
      */
+     /**
+      * @ORM\Column(type="string")
+      *
+      * @Assert\NotBlank(message="Ajouter une image jpg")
+      * @Assert\File(mimeTypes={ "image/jpeg" })
+      */
+     private $image;
+
+     public function getImage()
+     {
+         return $this->image;
+     }
+
+     public function setImage($image)
+     {
+         $this->image = $image;
+
+         return $this;
+     }
+
+
+
+
+
+
+
+
     public function getId()
     {
         return $this->id;
@@ -125,3 +153,4 @@ class Plat
         return $this->prix;
     }
 }
+?>
